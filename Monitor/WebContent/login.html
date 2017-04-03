@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SMART-Monitor</title>
+
+    <script type="text/javascript" src="./jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="./login.js"></script>
+    <link href="./css/login.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="zoom: 1;">
+    <h1>SMART-Monitor<sup>V0.0.3</sup></h1>
+
+    <div class="login" style="margin-top:50px;">
+
+        <div class="header">
+            <div class="switch" id="switch">
+                <a class="switch_btn_focus" id="switch_qlogin" href="javascript:void(0);" tabindex="7">LOGIN</a>
+                <a class="switch_btn" id="switch_login" href="javascript:void(0);" tabindex="8">REGISTER</a>
+                <div class="switch_bottom" id="switch_bottom" style="position: absolute; width: 50px; left: 0px;"></div>
+            </div>
+        </div>
+
+
+        <div class="web_qr_login" id="web_qr_login" style="display: block; height: 235px;">
+
+            <!--登录-->
+            <div class="web_login" id="web_login">
+
+
+                <div class="login-box">
+                    <div class="login_form">
+                        <form name="loginform" accept-charset="utf-8" id="login_form" method="post" class="loginForm" lpchecked="1">
+                            <div class="cue" id="login_tips"></div>
+                            <div class="uinArea" id="uinArea">
+                                <label class="input-tips" for="u">User</label>
+                                <div class="inputOuter" id="uArea">
+
+                                    <input type="text" id="u" name="username" class="inputstyle">
+                                </div>
+                            </div>
+                            <div class="pwdArea" id="pwdArea">
+                                <label class="input-tips" for="p">Password</label>
+                                <div class="inputOuter" id="pArea">
+
+                                    <input type="password" id="p" name="userpwd" class="inputstyle">
+                                </div>
+                            </div>
+
+                            <div style="padding-left:50px;margin-top:20px;"><input type="button" id="monitor_login" value="Login" style="width:150px;" class="button_blue"></div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+            <!--登录end-->
+        </div>
+
+        <!--注册-->
+        <div class="qlogin" id="qlogin" style="display: none;">
+
+            <div class="web_login">
+                <form name="form2" id="regUser" accept-charset="utf-8" method="post" _lpchecked="1">
+                    <input type="hidden" name="to" value="reg">
+                    <input type="hidden" name="did" value="0">
+                    <ul class="reg_form" id="reg-ul">
+                        <div id="userCue" class="cue"></div>
+                        <li>
+
+                            <label for="user" class="input-tips2">User</label>
+                            <div class="inputOuter2">
+                                <input type="text" id="user" name="user" maxlength="16" class="inputstyle2">
+                            </div>
+
+                        </li>
+
+                        <li>
+                            <label for="passwd" class="input-tips2">Password</label>
+                            <div class="inputOuter2">
+                                <input type="password" id="passwd" name="passwd" maxlength="16" class="inputstyle2">
+                            </div>
+
+                        </li>
+                        <li>
+                            <label for="passwd2" class="input-tips2">Confirm</label>
+                            <div class="inputOuter2">
+                                <input type="password" id="passwd2" name="" maxlength="16" class="inputstyle2">
+                            </div>
+
+                        </li>
+
+                        <li>
+                            <div class="inputArea">
+                                <input type="button" id="reg" style="margin-top:10px;margin-left:85px;" class="button_blue" value="Register">
+
+                        </li>
+                        <div class="cl"></div>
+                    </ul>
+                </form>
+
+
+                </div>
+
+
+            </div>
+            <!--注册end-->
+        </div>
+        <div class="copyright jianyi">© SMART Monitor by PMOL</div>
+        <div class="jianyi">潘韵如(SA16225225) 苗苗(SA16225213) 欧勇(SA16225221) 林鑫(SA16225168)</div>
+
+</body>
+
+</html>

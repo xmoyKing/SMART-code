@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="./css/font-awesome.min.css" type="text/css" rel="stylesheet">
+    <link href="./css/index.css" type="text/css" rel="stylesheet">
+    <title>SMART Monitor</title>
+</head>
+
+<body>
+    <div id="display"><b>说明:</b><br>
+        <ul>
+            <li><a href="javascript:void(0)" title="离线"><i class="fa fa-laptop fa-5x" aria-hidden="true"></i><br><span>离线</span></a></li>
+            <li><a href="javascript:void(0)" title="正常运行"><i class="fa fa-laptop fa-5x" aria-hidden="true" style="color: black;"></i><br><span style="color: black;">正常运行</span></a></li>
+            <li><a href="javascript:void(0)" title="状态码:2"><i class="fa fa-laptop fa-5x" aria-hidden="true" style="color: #cc0000;"></i><br><span style="color: #cc0000;">状态码:2</span></a></li>
+            <li><a href="javascript:void(0)" title="状态码:3"><i class="fa fa-laptop fa-5x" aria-hidden="true" style="color: #0000cc;"></i><br><span style="color: #0000cc;">状态码:3</span></a></li>
+            <li><a href="javascript:void(0)" title="状态码:4"><i class="fa fa-laptop fa-5x" aria-hidden="true" style="color: #cc6600;"></i><br><span style="color: #cc6600;">状态码:4</span></a></li>
+        </ul>
+    </div>
+    <div id="history"><b>History:</b><br>
+        <div></div>
+    </div>
+    <div class="warp common-icon-show">
+        <div class="message" id="message"><span class="rw-words"></span></div>
+        <ul id="devices"></ul>
+        <!-- 取消注释能同WebSocket服务器通信 -->
+        <input id="text" type="text" style="margin-top:10px;margin-bottom:10px;" /><input type="button" style="width:30%" onclick="send()" value="Send">
+        <input type="button" style="width:30%" value="Close" onclick="closeWebSocket()">
+    </div>
+
+    <div class="copyright">SMART Monitor design by PMOL</div><br/>
+    <script src="jquery-1.9.1.min.js"></script>
+    <script>
+        var websocket = new WebSocket('ws://localhost:8080/Monitor/websocket'); //创建WebSocket对象
+        //alert(websocket.readyState);//查看websocket当前状态
+
+
+        //连接成功建立的回调方法
+        websocket.onopen = function(event) {
+            $('#message > span.rw-words').html("连接 SMART Monitor Socket服务器成功");
+        }
+
+        //接收到消息的回调方法
+        websocket.onmessage = function(event) {
+            var data = JSON.parse(event.data);
+            var on = 0,
+                count = 0,
+                off = 0; //用于统计出错设备和离线设备数量
+
+            $.each(data, function(i, item) {
+                var crt = $('#device_Id' + item.device_Id); //先试着寻找该ID的设备图标
+
+                if (crt.length <= 0) { //若不存在该节点则先添加该节点
+                    var li = $('<li id="" data-state="0"><a href="javascript:void(0)" title="正常运行"><i class="fa fa-laptop fa-5x" aria-hidden="true"></i><br><span>&nbsp;</span></a></li>');
+                    li.attr('id', 'device_Id' + item.device_Id).attr('data-state', item.state).find('span').text(item.device_Id);
+                    $('#devices').append(li);
+                }
+
+                //将数据记录到历史栏中
+                if (item.state !== crt.attr('data-state')) { //只有当状态不一致的时候才会对dom做修改，状态码唯一，无论是离线还是在线
+                    $('#history > div').prepend('<br/><span style="font-weight:bold;">ID:' + item.device_Id + ', State:' + item.state + '</span>, Time:' + item.time_Statmp + '<br/>');
+                }
+                //存在该ID的设备图标，则直接修改状态
+                crt.find('i').attr('style', ''); //修改颜色为默认灰色
+                if (item.device_State === '1') {
+                    ++count;
+                    crt.find('a').attr('title', '状态码：' + item.state)
+                    if (item.state === '1') {
+                        crt.find('i').attr('style', 'color: black;'); //表示正常运行
+                        crt.find('span').attr('style', 'color: black;'); //表示正常运行
+                        ++on;
+                        --count;
+                    } else if (item.state === '2') {
+                        crt.find('i').attr('style', 'color: #cc0000;');
+                        crt.find('span').attr('style', 'color: #cc0000;');
+                    } else if (item.state === '3') {
+                        crt.find('i').attr('style', 'color: #0000cc;');
+                        crt.find('span').attr('style', 'color: #0000cc;');
+                    } else if (item.state === '4') {
+                        crt.find('i').attr('style', 'color: #cc6600;');
+                        crt.find('span').attr('style', 'color: #cc6600;');
+                    }
+                } else if (item.device_State === '0') { //device_State为 0表示对方已关机，或无法连接
+                    ++off;
+                    crt.attr('data-state', '0'); //设置状态为空
+                    crt.find('i').attr('style', '');
+                    crt.find('span').attr('style', '');
+                    crt.find('a').attr('title', '离线');
+                }
+                //console.log(item);
+            });
+
+            //设定消息栏
+            $('#message > span.rw-words').html('<b style="color:black;">' + on + '</b>个设备正常运行, <b style="color:red;">' + count + '</b>个设备出错, <b style="color:#999;">' + off + '</b>个设备离线');
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function() {
+            $('#message > span.rw-words').html("error");
+        };
+
+        //连接关闭的回调方法
+        websocket.onclose = function() {
+            $('#message > span.rw-words').html("close");
+        }
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function() {
+            websocket.close();
+        }
+
+        //关闭连接
+        function closeWebSocket() {
+            websocket.close();
+        }
+
+        //发送消息
+        function send() {
+            var message = document.getElementById('text').value;
+            websocket.send(message);
+        }
+    </script>
+</body>
+
+</html>
